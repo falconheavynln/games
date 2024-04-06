@@ -18,6 +18,7 @@ fps = 60
 bg_color = orange
 player_speed = 1200
 
+
 window_width = 1280
 window_height = 720
 
@@ -27,7 +28,7 @@ paddle_dist_from_wall = 0
 
 ball_radius = 30
 ball_speed_variation = (1, 3)
-beginning_ball_speed = (12, 20)
+beginning_ball_speed = (12, 30)
 
 ball_color = red
 left_paddle_color = blue
@@ -75,11 +76,11 @@ white = (255, 255, 255)
 green = (0, 255, 0)
 blue = (0, 0, 128)
 
-font = pygame.font.Font("freesansbold.ttf", 32)
+font = pygame.font.Font(loser_font, 32)
 
 # create a text surface object,
 # on which text is drawn on it.
-text = font.render("GeeksForGeeks", True, green, blue)
+text = font.render(loser_text, True, green, blue)
 
 # create a rectangular object for the
 # text surface object
@@ -102,15 +103,15 @@ while running:
     screen.blit(text, textRect)
 
     # draw all the objects
-    pygame.draw.circle(screen, "red", ball_pos, ball_radius)
+    pygame.draw.circle(screen, ball_color, ball_pos, ball_radius)
     pygame.draw.rect(
         screen,
-        "blue",
+        left_paddle_color,
         (left_paddle_pos.x, left_paddle_pos.y, paddle_width, paddle_height),
     )
     pygame.draw.rect(
         screen,
-        "blue",
+        right_paddle_color,
         (right_paddle_pos.x, right_paddle_pos.y, paddle_width, paddle_height),
     )
 
@@ -180,7 +181,6 @@ while running:
 
         # ball bounce off walls:
         # top wall
-        # ball movement
         if ball_pos.y - ball_radius < 0:
             ball_velocity.y = -ball_velocity.y
         # bottom wall
@@ -188,38 +188,55 @@ while running:
             ball_velocity.y = -ball_velocity.y
 
         # ball bounce off left paddle:
-        # front face
+        # # top face
         if (
-            ball_pos.x - ball_radius < left_paddle_pos.x + paddle_width
-            and left_paddle_pos.y + paddle_height + ball_radius
-            > ball_pos.y
-            > left_paddle_pos.y - ball_radius
-        ):
-            ball_velocity.x *= -1
-            bounced = True
-        # top face
-        if (
-            ball_pos.y - ball_radius < left_paddle_pos.y + paddle_height
-            and left_paddle_pos.x + paddle_width + ball_radius
-            > ball_pos.x
-            > left_paddle_pos.x - ball_radius
+            left_paddle_pos.y + paddle_height / 2
+            > ball_pos.y + ball_radius
+            > left_paddle_pos.y - 10
+            and left_paddle_pos.x + paddle_width > ball_pos.x > left_paddle_pos.x
         ):
             ball_velocity.y *= -1
         # bottom face
         if (
-            ball_pos.y - ball_radius < left_paddle_pos.y + paddle_height
-            and left_paddle_pos.x + paddle_width + ball_radius
-            > ball_pos.x
-            > left_paddle_pos.x - ball_radius
+            left_paddle_pos.y + paddle_height / 2
+            < ball_pos.y - ball_radius
+            < left_paddle_pos.y + paddle_height + 10
+            and left_paddle_pos.x + paddle_width > ball_pos.x > left_paddle_pos.x
         ):
             ball_velocity.y *= -1
-            print("yay!")
+        # front face
+        if (
+            ball_pos.x - ball_radius < left_paddle_pos.x + paddle_width
+            and left_paddle_pos.y + paddle_height - 10
+            > ball_pos.y
+            > left_paddle_pos.y + 10
+        ):
+            ball_velocity.x *= -1
+            bounced = True
 
+        # ball ounce off right paddle:
+        # top face
+        if (
+            right_paddle_pos.y + paddle_height / 2
+            > ball_pos.y + ball_radius
+            > right_paddle_pos.y - 10
+            and right_paddle_pos.x + paddle_width > ball_pos.x > right_paddle_pos.x
+        ):
+            ball_velocity.y *= -1
+        # bottom face
+        if (
+            right_paddle_pos.y + paddle_height / 2
+            < ball_pos.y - ball_radius
+            < right_paddle_pos.y + paddle_height + 10
+            and right_paddle_pos.x + paddle_width > ball_pos.x > right_paddle_pos.x
+        ):
+            ball_velocity.y *= -1
+        # front face
         if (
             ball_pos.x + ball_radius > right_paddle_pos.x
-            and right_paddle_pos.y + paddle_height + ball_radius
+            and right_paddle_pos.y + paddle_height + ball_radius - 10
             > ball_pos.y
-            > right_paddle_pos.y - ball_radius
+            > right_paddle_pos.y - ball_radius + 10
         ):
             ball_velocity.x *= -1
             bounced = True
